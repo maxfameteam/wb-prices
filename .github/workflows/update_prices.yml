@@ -1,0 +1,28 @@
+name: Update WB Prices
+
+on:
+  schedule:
+    - cron: '0 18 * * *'  # каждый день в 21:00 по Москве (UTC+3)
+  workflow_dispatch:        # кнопка для запуска вручную
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests gspread google-auth
+
+      - name: Run script
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+        run: python wb_prices.py
